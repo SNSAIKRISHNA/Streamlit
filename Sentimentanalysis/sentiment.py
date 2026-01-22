@@ -11,14 +11,16 @@ DEPLOYMENT_NAME = os.getenv("AZURE_DEPLOYMENT_NAME")
 API_VERSION = os.getenv("AZURE_API_VERSION")
 
 client = AzureOpenAI(
-    api_key=AZURE_OPENAI_KEY,
-    azure_endpoint=AZURE_ENDPOINT,
-    api_version=API_VERSION
+    api_key=AZURE_OPENAI_KEY, azure_endpoint=AZURE_ENDPOINT, api_version=API_VERSION
 )
 
-
-st.markdown("<h1 style='text-align:center;'>Sentiment Analysis</h1>", unsafe_allow_html=True)
-st.write("Analyze text sentiment using **Azure OpenAI + Streamlit**")
+st.markdown(
+    "<h1 style='text-align:center;'>Sentiment Analysis</h1>", unsafe_allow_html=True
+)
+st.markdown(
+    "<p style='text-align:center;'>Analyze text sentiment using **Azure OpenAI + Streamlit**</p>",
+    unsafe_allow_html=True,
+)
 
 text = st.text_area("Enter Your Text")
 
@@ -29,15 +31,13 @@ if st.button("Analyze Sentiment"):
         with st.spinner("Analyzing..."):
             response = client.chat.completions.create(
                 model=DEPLOYMENT_NAME,
-                messages= [
+                messages=[
                     {
-                    "role": "user",
-                    "content": "you are a sentiment analysis assistant. Classify sentiment as Positive, Negative, or Neutral."
-                    },{
-                        "role": "user",
-                        "content":f"Text: {text}"
-                    }
-                ]
+                        "role": "system",
+                        "content": "you are a sentiment analysis assistant. Classify sentiment as Positive, Negative, or Neutral.",
+                    },
+                    {"role": "user", "content": f"Text: {text}"},
+                ],
             )
             sentiment = response.choices[0].message.content.strip()
         if "Positive" in sentiment:
